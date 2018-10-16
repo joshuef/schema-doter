@@ -40,3 +40,6 @@ vocabs
 
 .idea
 npm-debug.log.*
+
+
+schemaDefinitions/

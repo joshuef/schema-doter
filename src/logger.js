@@ -5,6 +5,11 @@ import cliOptions from './cli-options';
 import path from 'path';
 
 
+import {
+    logFileName,
+} from './constants';
+
+
 // 	levels = error, warn, info, debug, and trace
 
 let logLevel = cliOptions.logLevel;
@@ -19,7 +24,7 @@ if( typeof logLevel === 'boolean' )
 
 const rootFolder = path.basename( path.dirname( __dirname ) );
 
-log.addTarget( 'file', { file: path.resolve( process.cwd(), 's-cli.log' )} )
+log.addTarget( 'file', { file: path.resolve( process.cwd(), logFileName )} )
     .withLowestSeverity( 'debug' )
     .withHighestSeverity( 'error' );
 
