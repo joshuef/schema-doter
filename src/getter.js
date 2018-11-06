@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import request from 'request-promise-native';
 import fs from 'fs-extra';
 import path from 'path';
@@ -10,7 +12,25 @@ import {
 
 logger.info( 'Starting fetch of schema.org vocabs.' )
 
-const writeExportLine = ( schemaName ) => ( `export ${schemaName} from '../schemaDefinitions/${schemaName}.json'; \n` );
+const writeExportLine = ( schemaName ) => (
+    `Object.defineProperty(exports, "${schemaName}", {
+      enumerable: true,
+      get: function () {
+        return _${schemaName}2.default;
+      }
+    }); \n
+
+    var _${schemaName}2 = _interopRequireDefault(require("../schemaDefinitions/${schemaName}.json"));
+    `
+);
+
+const writeStartLine = `"use strict";
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});`
+const writeEndLine = `function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }`
+
+
 
 const downloadData = async ( schemaObject ) =>
 {
@@ -19,6 +39,7 @@ const downloadData = async ( schemaObject ) =>
         throw new Error( 'No name!' )
 
     const link = `https://schema.org/${theName}.jsonld`;
+
 
     if( schemaObject.children )
     {
@@ -42,14 +63,14 @@ const downloadData = async ( schemaObject ) =>
         fs.appendFileSync( indexFileLocation, writeExportLine( theName ) );
         logger.trace( theName, 'json schema added to index' );
 
-
-
     }
     catch ( e )
     {
-        console.error( 'Error retrieving: ', theName )
-        throw new Error ( e );
+        logger.error( 'Error retrieving: ', theName )
+        // throw new Error ( e );
     }
+
+    return;
 
 };
 
@@ -71,7 +92,12 @@ const getEverything = async () =>
         logger.error( 'Problems getting the everything link...' )
     }
 
-    downloadData( everything );
+
+    fs.ensureFileSync( indexFileLocation );
+    fs.appendFileSync( indexFileLocation, writeStartLine );
+    await downloadData( everything );
+
+    fs.appendFileSync( indexFileLocation, writeEndLine );
 
     logger.info( 'Schema.org saved locally. Have fun!.' )
 }

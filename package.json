@@ -13,16 +13,15 @@
     "url": "https://github.com/joshuef"
   },
   "scripts": {
-    "start": "yarn rimraf ./schemaDefinitions && yarn ./lib/getter.js",
-    "get": "yarn rimraf ./schemaDefinitions && yarn babel-node src/getter.js",
+    "start": "yarn rimraf ./schemaDefinitions && babel-node ./src/getter.js",
+    "get": "yarn rimraf ./schemaDefinitions && node ./lib/getter.js",
     "build": "rimraf ./lib && babel src -d lib",
-    "compile-schemas": "babel ./schemaDefinitions/precompile.js --out-file ./schemaDefinitions/index.js",
     "lint": "eslint --cache --format=node_modules/eslint-formatter-pretty .",
     "lint-fix": "yarn run lint --fix",
     "prepush": "yarn lint && yarn test",
     "test": "jest --maxWorkers=2",
     "bump": "standard-version",
-    "postinstall": "yarn get && yarn compile-schemas"
+    "postinstall": "yarn get -l"
   },
   "dependencies": {
     "bristol": "0.4.0",
@@ -32,6 +31,7 @@
     "palin": "2.2.0",
     "request": "2.88.0",
     "request-promise-native": "1.0.5",
+    "cross-env": "5.2.0",
     "rimraf": "2.6.2"
   },
   "devDependencies": {
@@ -44,7 +44,6 @@
     "babel-eslint": "9.0.0",
     "babel-jest": "23.4.2",
     "coveralls": "3.0.2",
-    "cross-env": "5.2.0",
     "eslint": "5.5.0",
     "eslint-formatter-pretty": "1.3.0",
     "eslint-plugin-import": "2.14.0",
